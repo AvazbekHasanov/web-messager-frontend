@@ -21,4 +21,3 @@ coverage
 !.vscode/extensions.json
 .idea
 
-*.tsbuildinfo

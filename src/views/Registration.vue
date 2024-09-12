@@ -1,9 +1,19 @@
 <script setup>
 import {RouterLink} from "vue-router";
 import {useRoute} from "vue-router";
-import {ref} from "vue";
+import {ref, onMounted, reactive} from "vue";
+import { getCurrentInstance } from 'vue';
+import {data} from "autoprefixer";
 
 const route = useRoute();
+
+const errorMessages = reactive({
+  email_error: 'Email address already exists!',
+  is_show_email_error: false,
+  username_error: 'Username address already exists!',
+  is_show_username_error: false,
+})
+
 const userData = ref({
   user_id: route.params.user_id,
   first_name: '',
@@ -13,9 +23,33 @@ const userData = ref({
   password: '',
   remember_me: false
 })
+
+const { proxy } = getCurrentInstance();
+
 const registerUser = ()=>{
-  console.log('userDate')
+  for (let key in userData.value){
+    if (!userData.value[key] && key != 'user_id') {
+      console.log(userData.value)
+      return
+    }
+  }
+  proxy.$axios.post('/auth/register', userData.value)
+  .then(response => {
+    console.log("response", response)
+  })
+  .catch(error => {
+    console.error('There was an error!', error.response.data.typeError);
+    if (error.response.data.typeError === 'EMAIL_ADDRESS_ALREADY_EXISTS'){
+      errorMessages.is_show_email_error = true;
+      console.log("errorMessages.is_show_email_error", errorMessages.is_show_email_error)
+    }else if(error.response.data.typeError === 'USERNAME_ADDRESS_ALREADY_EXISTS'){
+      errorMessages.is_show_username_error = true;
+    }
+  });
 }
+
+
+
 
 </script>
 
@@ -33,7 +67,7 @@ const registerUser = ()=>{
           </div>
         </div>
 
-        <form class="md:col-span-2 w-full py-6 px-6 sm:px-16" >
+        <form class="md:col-span-2 w-full py-6 px-6 sm:px-16" id="registration-form" @submit.prevent="handleSubmit">
           <div class="mb-6">
             <h3 class="text-gray-800 text-2xl font-bold dark:text-gray-100">Create an account</h3>
           </div>
@@ -68,18 +102,19 @@ const registerUser = ()=>{
              <div>
               <label class="text-gray-800 text-sm mb-2 block dark:text-gray-100">Username</label>
               <div class="relative flex items-center">
-                <input name="name" type="text" v-model="userData.username" required class="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 pr-8 py-2.5 rounded-md outline-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Enter name" />
+                <input name="name" type="text" v-model="userData.username" @input="errorMessages.is_show_username_error = false" required class="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 pr-8 py-2.5 rounded-md outline-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Enter name" />
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-4 h-4 absolute right-4" viewBox="0 0 24 24">
                   <circle cx="10" cy="7" r="6" data-original="#000000"></circle>
                   <path d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5zm8-4h-2.59l.3-.29a1 1 0 0 0-1.42-1.42l-2 2a1 1 0 0 0 0 1.42l2 2a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42l-.3-.29H22a1 1 0 0 0 0-2z" data-original="#000000"></path>
                 </svg>
               </div>
+               <span class="text-red-600" v-if="errorMessages.is_show_username_error">{{errorMessages.username_error}}  </span>
             </div>
 
             <div>
               <label class="text-gray-800 text-sm mb-2 block dark:text-gray-100">Email address</label>
               <div class="relative flex items-center">
-                <input name="email" type="email" v-model="userData.email" required class="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 pr-8 py-2.5 rounded-md outline-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Enter email" />
+                <input name="email" type="email" v-model="userData.email" @input="errorMessages.is_show_email_error = false" required class="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 pr-8 py-2.5 rounded-md outline-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Enter email" />
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-4 h-4 absolute right-4" viewBox="0 0 682.667 682.667">
                   <defs>
                     <clipPath id="a" clipPathUnits="userSpaceOnUse">
@@ -92,6 +127,7 @@ const registerUser = ()=>{
                   </g>
                 </svg>
               </div>
+              <span class="text-red-600" v-if="errorMessages.is_show_email_error">{{errorMessages.email_error}}  </span>
             </div>
 
             <div>
@@ -105,7 +141,7 @@ const registerUser = ()=>{
             </div>
 
             <div class="flex items-center select-none">
-              <input id="remember-me" v-model="userData.remember_me" name="remember-me" type="checkbox" class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 pr-8 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <input id="remember-me" v-model="userData.remember_me" name="remember-me" type="checkbox" required class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 pr-8 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               <label for="remember-me" class="ml-3 block text-sm text-gray-800 dark:text-gray-100">
                 I accept the <a href="javascript:void(0);" class="text-blue-600 font-semibold hover:underline ml-1 ">Terms and Conditions</a>
               </label>

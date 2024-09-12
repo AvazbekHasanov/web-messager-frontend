@@ -10,12 +10,12 @@
         <div v-if="message.is_owner" class="flex-shrink-0 ml-2 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
       </div>
     </div>
-    <ChatInput />
+   <ChatInput></ChatInput>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {reactive, ref} from 'vue';
 import ChatInput from './ChatInput.vue';
 
 const messages = ref([
@@ -32,4 +32,29 @@ const messages = ref([
   { id: 5, is_owner: false ,from: 'Grace Miller', content: 'That sounds like a great plan! Excited 😃' },
   { id: 6, is_owner: true,from: 'Jack Raymonds', content: 'Can\'t wait for the weekend!' },
 ]);
+
+
 </script>
+
+<style >
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+</style>
