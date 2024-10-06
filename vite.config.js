@@ -1,16 +1,17 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from 'url'; // Keep using this for URL manipulation
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import postcss from 'postcss';
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      'path': 'path-browserify',
+      'url': 'url',
+    },
   }
-})
+});

@@ -32,7 +32,7 @@
                 v-model="messageData.text"
             ></textarea>
           </div>
-          <button aria-label="Отправить подсказку" data-testid="send-button"
+          <button @click="sendMessage" data-testid="send-button"
                   class="mb-1 me-1 flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-colors hover:opacity-70 focus-visible:outline-none focus-visible:outline-black disabled:text-[#f4f4f4] disabled:hover:opacity-100 dark:bg-white dark:text-black dark:focus-visible:outline-white disabled:dark:bg-token-text-quaternary dark:disabled:text-token-main-surface-secondary disabled:bg-[#D7D7D7]">
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"
                  class="icon-2xl">
@@ -51,7 +51,9 @@
 </template>
 
 <script setup>
-import {ref, nextTick, reactive} from "vue";
+import {ref, nextTick, reactive, defineEmits} from "vue";
+
+const emit = defineEmits(["sendMessage"]);
 
 const messageText = ref(null);
 const textarea = ref(null);
@@ -60,11 +62,16 @@ const messageData = reactive({
   file: []
 });
 
+
+
 const writtenMessage = () => {
   console.log("messageText", messageText.value);
   autoResize();
 };
 
+const sendMessage = ()=>{
+  emit('sendMessage', messageData)
+}
 const autoResize = () => {
   nextTick(() => {
     if (textarea.value) {
@@ -78,14 +85,3 @@ const autoResize = () => {
 
 
 
-<!--            <div class="flex flex-nowrap gap-2">-->
-<!--              <div class="group relative inline-block text-sm text-token-text-primary">-->
-<!--                <button-->
-<!--                    class="absolute right-1 top-1 -translate-y-1/2 translate-x-1/2 rounded-full border border-token-border-heavy bg-token-main-surface-secondary p-0.5 text-token-text-primary transition-colors hover:opacity-100 group-hover:opacity-100 md:opacity-0">-->
-<!--                  <span class="" data-state="closed"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"-->
-<!--                                                          xmlns="http://www.w3.org/2000/svg" class="icon-sm"><path-->
-<!--                      fill-rule="evenodd" clip-rule="evenodd"-->
-<!--                      d="M5.63603 5.63604C6.02656 5.24552 6.65972 5.24552 7.05025 5.63604L12 10.5858L16.9497 5.63604C17.3403 5.24552 17.9734 5.24552 18.364 5.63604C18.7545 6.02657 18.7545 6.65973 18.364 7.05025L13.4142 12L18.364 16.9497C18.7545 17.3403 18.7545 17.9734 18.364 18.364C17.9734 18.7545 17.3403 18.7545 16.9497 18.364L12 13.4142L7.05025 18.364C6.65972 18.7545 6.02656 18.7545 5.63603 18.364C5.24551 17.9734 5.24551 17.3403 5.63603 16.9497L10.5858 12L5.63603 7.05025C5.24551 6.65973 5.24551 6.02657 5.63603 5.63604Z"-->
-<!--                      fill="currentColor"></path></svg></span></button>-->
-<!--              </div>-->
-<!--            </div>-->

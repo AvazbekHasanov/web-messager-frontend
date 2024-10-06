@@ -4,6 +4,8 @@ import axios from "axios";
 import {reactive, ref, getCurrentInstance} from "vue";
 import router from "@/router/index.js";
 
+const { proxy } = getCurrentInstance();
+
 
 const username = reactive({
     value: "",
@@ -19,15 +21,12 @@ const password = reactive({
 const isSaveUsername = ref(false)
 const login = (e)=>{
   e.preventDefault();
-  console.log("password", password);
-  console.log("username", username);
-  console.log("isSaveUsername", isSaveUsername.value);
-  axios.post('http://10.20.11.66:3000/api/auth/login', {password: password.value, username: username.value}, {}).then(res=>{
-    localStorage.setItem('access_token', res.data.accessToken);
-    document.cookie = `access_token=${res.data.accessToken}`;
+  proxy.$axios.post('/api/auth/login', {password: password.value, username: username.value}).then(res=>{
+    localStorage.setItem('access_token', res.accessToken);
+    document.cookie = `access_token=${res.accessToken}`;
     router.push('/cabinet');
   }).catch(err=>{
-    console.log(err)
+    console.log("err", err.response.data)
   })
 }
 

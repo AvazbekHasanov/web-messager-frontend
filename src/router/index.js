@@ -48,6 +48,12 @@ router.beforeEach((to, from, next) => {
     next();
   } else {
       let jwt = localStorage.getItem('access_token');
+      if (!jwt) {
+          next({
+              name: 'login',
+              query: {next: encodeURIComponent(to.fullPath)}
+          });
+      }
       let userData = jwtDecode.decode(jwt);
     if (userData.exp <  Date.now()/1000) {
       next({
