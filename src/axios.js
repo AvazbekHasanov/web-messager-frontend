@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://prime-core.uz', // You can set your default base URL here
+  baseURL: 'https://prime-core.uz', // You can set your default base URL here
   timeout: 10000,
   headers:{
     'Content-Type': 'application/json',
