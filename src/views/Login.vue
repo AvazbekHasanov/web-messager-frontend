@@ -21,7 +21,7 @@ const password = reactive({
 const isSaveUsername = ref(false)
 const login = (e)=>{
   e.preventDefault();
-  proxy.$axios.post('/api/auth/login', {password: password.value, username: username.value}).then(res=>{
+  proxy.$axios.post('/auth/login', {password: password.value, username: username.value}).then(res=>{
     localStorage.setItem('access_token', res.accessToken);
     document.cookie = `access_token=${res.accessToken}`;
     router.push('/cabinet');
