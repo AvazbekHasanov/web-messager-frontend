@@ -7,7 +7,7 @@
              v-model="username" @focus="startSearching" @input="debouncedSearch"/>
     </div>
     <div class="space-y-2">
-      <p>Salom {{ iterationChats.length }} </p>
+<!--      <p>Salom {{ iterationChats.length }} </p>-->
       <div v-for="chat in iterationChats" :key="chat.id"
            class="p-2 rounded flex gap-2.5 flex-row hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer" @click="selectChat(chat)">
         <div>
@@ -15,7 +15,7 @@
         </div>
         <div>
           <p class="font-bold text-black dark:text-white">{{ chat.full_name ?? chat.username }}</p>
-          <p class="text-sm text-gray-600 dark:text-gray-400">{{ chat.lastMessage }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ chat.lastmessage }}</p>
         </div>
       </div>
     </div>

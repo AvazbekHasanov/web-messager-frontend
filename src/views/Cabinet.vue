@@ -43,10 +43,9 @@ const toggleDarkMode = () => {
 };
 
 const selectNewChat = (chatInfo)=>{
-  console.log("chatInfo", chatInfo);
   if (chatInfo.user_id || chatInfo.chat_id) {
     try {
-     proxy.$axios.get('/api/chat/start/conversation/' + chatInfo.chat_id, {user_id: chatInfo.user_id}).then((response) => {
+     proxy.$axios.get('/chat/start/conversation/' + chatInfo.chat_id, {user_id: chatInfo.user_id}).then((response) => {
        selectedChatInfo.messages = response.messages
        selectedChatInfo.userData = response.chatInfo
     })

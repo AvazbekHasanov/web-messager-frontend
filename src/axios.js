@@ -4,13 +4,25 @@ import axios from 'axios';
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000', // You can set your default base URL here
+  baseURL: 'http://localhost:3000/api', // You can set your default base URL here
   timeout: 10000,
   headers:{
-    'Content-Type': 'application/json',
-     'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+    'Content-Type': 'application/json'
   },
 });
+
+axiosInstance.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
 
 // Global Axios object with methods for GET, POST, PUT, DELETE
 const $axios = {
