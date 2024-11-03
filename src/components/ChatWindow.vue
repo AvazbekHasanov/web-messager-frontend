@@ -12,7 +12,10 @@
         <div v-if="!message.is_owner" class="flex-shrink-0 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full mr-2"></div>
         <div class=" bg-white dark:bg-gray-800 rounded shadow "  style="padding: 5px 20px">
           <p class="font-bold text-black dark:text-white">{{ message.from }}</p>
-          <p class="text-black dark:text-white" v-html="formatTextWithBr(message.content)"> </p>
+ <media-container :files="message.files" :is_modal="false"/>
+
+          <p class="text-black dark:text-white" v-html="formatTextWithBr(message.content)" v-if="message.content"></p>
+
         </div>
         <div v-if="message.is_owner" class="flex-shrink-0 ml-2 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
       </div>
@@ -28,6 +31,7 @@
 <script setup>
 import {ref, defineProps, onMounted, getCurrentInstance, watch, nextTick} from 'vue';
 import ChatInput from './ChatInput.vue';
+import MediaContainer from "@/components/mediaContainer.vue";
 
 const props = defineProps({
   selectedChatInfo: { type: Object, required: true },
