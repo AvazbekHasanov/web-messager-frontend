@@ -12,7 +12,10 @@
         <div v-if="!message.is_owner" class="flex-shrink-0 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full mr-2"></div>
         <div class=" bg-white dark:bg-gray-800 rounded shadow "  style="padding: 5px 20px">
           <p class="font-bold text-black dark:text-white">{{ message.from }}</p>
-          <p class="text-black dark:text-white" v-html="formatTextWithBr(message.content)"> </p>
+ <media-container :files="message.files" :is_modal="false"/>
+
+          <p class="text-black dark:text-white" v-html="formatTextWithBr(message.content)" v-if="message.content"></p>
+
         </div>
         <div v-if="message.is_owner" class="flex-shrink-0 ml-2 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
       </div>
@@ -28,12 +31,18 @@
 <script setup>
 import {ref, defineProps, onMounted, getCurrentInstance, watch, nextTick} from 'vue';
 import ChatInput from './ChatInput.vue';
+import MediaContainer from "@/components/mediaContainer.vue";
+
+import { createSocket } from "@/services/socket.js";
+
+const socket = createSocket();
 
 const props = defineProps({
   selectedChatInfo: { type: Object, required: true },
 })
 
-const {proxy} = getCurrentInstance()
+const {proxy} = getCurrentInstance();
+
 
 
 
@@ -54,20 +63,13 @@ const messages = ref([
 const messagesContainer = ref(null);
 
 const sendMessage = async (arg)=>{
-  if (!arg.text || !arg.text.trim()){
-    for (let index = 0; index < 800; index++) {
-      fetch('http://prime-core.uz/').then((response) => {
-        console.log(response)
-      })
-    }
-    return
-  }
   let data = {
     message: arg.text,
     chat_id:props.selectedChatInfo.userData.chat_id
   }
    const result =  await proxy.$axios.post('/message/new/message',data);
   props.selectedChatInfo.messages.push(result.data);
+  socket.emit('newMessageSend', result.data);
   scrollToBottom()
 }
 
@@ -90,7 +92,10 @@ watch(props.selectedChatInfo, (first, second) => {
   })
 })
 onMounted(()=>{
-  scrollToBottom()
+  scrollToBottom();
+  socket.on("newMessage", (data) => {
+      console.log("New message received:", data);
+  });
 })
 </script>
 

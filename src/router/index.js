@@ -44,7 +44,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.name === 'login' || to.name === 'registration') {
+  if (to.name === 'login' || to.name === 'registration' || to.name === 'main') {
     next();
   } else {
       let jwt = localStorage.getItem('access_token');
@@ -54,8 +54,10 @@ router.beforeEach((to, from, next) => {
               query: {next: encodeURIComponent(to.fullPath)}
           });
       }
-      let userData = jwtDecode.decode(jwt);
+      let userData =  safeDecode(jwt);
     if (userData.exp <  Date.now()/1000) {
+      localStorage.removeItem("auth_user");
+      localStorage.removeItem("access_token");
       next({
         name: 'login',
         query: { next: encodeURIComponent(to.fullPath) }
@@ -65,5 +67,21 @@ router.beforeEach((to, from, next) => {
     }
   }
 });
+
+function safeDecode(token) {
+  try {
+    console.log("token", token);
+    const parts = token.split('.');
+    if (parts.length !== 3)
+        throw new Error('Invalid token format');
+      
+      
+    const payload = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(payload);
+  } catch (error) {
+    console.error('Token decoding failed:', error);
+    return null;
+  }
+}
 
 export default router

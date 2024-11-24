@@ -50,7 +50,7 @@ const searchUser = async () => {
   if (username.value === '') return;
 
   try {
-    const response = await proxy.$axios.get('api/find/user', {username: username.value})
+    const response = await proxy.$axios.get('find/user', {username: username.value})
     searchResult.value = response.result
     iterationChats.value = response.result;
   } catch (error) {
@@ -71,7 +71,7 @@ watch(username, () => {
 });
 
 onMounted(async  function () {
-  const response = await proxy.$axios.get('api/user/chat/list')
+  const response = await proxy.$axios.get('user/chat/list')
   iterationChats.value = response.chat_list;
 })
 </script>
