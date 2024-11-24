@@ -18,7 +18,7 @@ const checkImageType = (type) => {
 </script>
 
 <template>
-  <div class="meadia_content" :class="[{'scroll': props.is_modal}, {'one_item': props.files.length === 1}]">
+  <div class="meadia_content" :class="[{'scroll': props.is_modal}, {'one_item': props?.files?.length === 1}]">
     <div v-for="(item, index) in props.files" :key="index" class="media_item">
       <circle-xmark v-if="props.is_modal == true" @click="deleteMediaItem(index)"></circle-xmark>
       <img :src="item.path" alt="Preview" class="image-preview" v-if="checkImageType(item.extension)"/>

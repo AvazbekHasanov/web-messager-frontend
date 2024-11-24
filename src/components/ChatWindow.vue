@@ -33,11 +33,16 @@ import {ref, defineProps, onMounted, getCurrentInstance, watch, nextTick} from '
 import ChatInput from './ChatInput.vue';
 import MediaContainer from "@/components/mediaContainer.vue";
 
+import { createSocket } from "@/services/socket.js";
+
+const socket = createSocket();
+
 const props = defineProps({
   selectedChatInfo: { type: Object, required: true },
 })
 
-const {proxy} = getCurrentInstance()
+const {proxy} = getCurrentInstance();
+
 
 
 
@@ -58,20 +63,13 @@ const messages = ref([
 const messagesContainer = ref(null);
 
 const sendMessage = async (arg)=>{
-  if (!arg.text || !arg.text.trim()){
-    for (let index = 0; index < 800; index++) {
-      fetch('http://prime-core.uz/').then((response) => {
-        console.log(response)
-      })
-    }
-    return
-  }
   let data = {
     message: arg.text,
     chat_id:props.selectedChatInfo.userData.chat_id
   }
    const result =  await proxy.$axios.post('/message/new/message',data);
   props.selectedChatInfo.messages.push(result.data);
+  socket.emit('newMessageSend', result.data);
   scrollToBottom()
 }
 
@@ -94,7 +92,10 @@ watch(props.selectedChatInfo, (first, second) => {
   })
 })
 onMounted(()=>{
-  scrollToBottom()
+  scrollToBottom();
+  socket.on("newMessage", (data) => {
+      console.log("New message received:", data);
+  });
 })
 </script>
 

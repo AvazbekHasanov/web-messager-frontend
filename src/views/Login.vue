@@ -22,7 +22,10 @@ const isSaveUsername = ref(false)
 const login = (e)=>{
   e.preventDefault();
   proxy.$axios.post('/auth/login', {password: password.value, username: username.value}).then(res=>{
+    console.log('Access Token:', res.accessToken);
+
     localStorage.setItem('access_token', res.accessToken);
+    localStorage.setItem('auth_user', JSON.stringify(res.userData))
     document.cookie = `access_token=${res.accessToken}`;
     router.push('/cabinet');
   }).catch(err=>{
@@ -35,7 +38,7 @@ const login = (e)=>{
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-6">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <img class="mx-auto h-10 w-auto" src="https://www.svgrepo.com/show/301692/login.svg" alt="Workflow">
+      <img class="mx-auto h-10 w-auto" src="../../public/svgs/login.svg" alt="Workflow">
       <h2 class="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900 dark:text-gray-100">
         Sign in to your account
       </h2>
