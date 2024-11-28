@@ -8,6 +8,7 @@
       <div class="dark:text-white">{{selectedChatInfo.userData.full_name}}</div>
     </div>
     <div class="flex-grow p-4 overflow-auto" ref="messagesContainer">
+
       <div v-if="selectedChatInfo.messages.length>0" class="flex justify-start mb-4" v-for="message in props.selectedChatInfo.messages" :key="message.id" :class="{'justify-end': message.is_owner}">
         <div v-if="!message.is_owner" class="flex-shrink-0 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full mr-2"></div>
         <div class=" bg-white dark:bg-gray-800 rounded shadow "  style="padding: 5px 20px">
@@ -19,6 +20,7 @@
         </div>
         <div v-if="message.is_owner" class="flex-shrink-0 ml-2 w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
       </div>
+
       <div v-else class="free_content">
         No message here yet..
         Start chatting
@@ -33,9 +35,6 @@ import {ref, defineProps, onMounted, getCurrentInstance, watch, nextTick} from '
 import ChatInput from './ChatInput.vue';
 import MediaContainer from "@/components/mediaContainer.vue";
 
-import { createSocket } from "@/services/socket.js";
-
-const socket = createSocket();
 
 const props = defineProps({
   selectedChatInfo: { type: Object, required: true },
@@ -69,7 +68,6 @@ const sendMessage = async (arg)=>{
   }
    const result =  await proxy.$axios.post('/message/new/message',data);
   props.selectedChatInfo.messages.push(result.data);
-  socket.emit('newMessageSend', result.data);
   scrollToBottom()
 }
 
@@ -93,9 +91,6 @@ watch(props.selectedChatInfo, (first, second) => {
 })
 onMounted(()=>{
   scrollToBottom();
-  socket.on("newMessage", (data) => {
-      console.log("New message received:", data);
-  });
 })
 </script>
 

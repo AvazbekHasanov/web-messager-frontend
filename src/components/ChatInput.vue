@@ -90,7 +90,6 @@ const messageData = reactive({
 
 
 const writtenMessage = () => {
-  console.log("messageText", messageText.value);
   autoResize();
 };
 
@@ -106,7 +105,6 @@ const autoResize = () => {
   nextTick(() => {
     if (textarea.value) {
       textarea.value.style.height = 'auto'; // Reset height
-      console.log("textarea.value.scrollHeight", textarea.value.scrollHeight, typeof textarea.value.scrollHeight)
       textarea.value.style.height = (textarea.value.scrollHeight + 3) + 'px'; // Set new height
     }
   });
@@ -136,7 +134,6 @@ async function uploadToServer() {
   xhr.upload.addEventListener("progress", (event) => {
     if (event.lengthComputable) {
       let percentage = (event.loaded / event.total) * 100;
-      console.log('percentage', percentage)
     }
   });
 
@@ -144,7 +141,6 @@ async function uploadToServer() {
     if (xhr.status === 200) {
       let result = JSON.parse(xhr.responseText);
       messageData.files.push(result);
-      console.log(messageData)
     } else {
       console.log("Request failed with status: " + xhr.status);
     }

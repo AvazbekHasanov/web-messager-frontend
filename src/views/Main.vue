@@ -21,7 +21,9 @@ import UzbIcon from "@/components/icons/uzb-icon.vue";
 
     </div>
       <div>
-        <button class="enter-in-system">Login/Registration </button>
+        <button class="enter-in-system"> 
+          <router-link to="/auth/login"> Login/Registration </router-link>
+          </button>
       </div>
     </header>
   </div>
