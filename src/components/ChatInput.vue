@@ -53,6 +53,7 @@
             <textarea
                 type="text"
                 @input="writtenMessage"
+                @keydown="handleKeyDown"
                 placeholder="Type a message..."
                 ref="textarea"
                 class="resize-none w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white "
@@ -76,6 +77,7 @@
 <script setup>
 import {ref, nextTick, reactive, defineEmits, getCurrentInstance} from "vue";
 import MediaContainer from "@/components/mediaContainer.vue";
+import { onMounted } from "vue";
 
 const emit = defineEmits(["sendMessage"]);
 
@@ -101,6 +103,31 @@ const sendMessage = () => {
   emit('sendMessage', {...messageData})
   clearMessageData()
 }
+
+
+const handleKeyDown = (event) => {
+  
+  if (event.key === "Enter") {
+    if (event.shiftKey) {
+      // Handle Shift + Enter for a new line
+      const cursorPosition = event.target.selectionStart;
+      const text = messageData.value.text;
+      messageData.value.text =
+        text.slice(0, cursorPosition) + "\n" + text.slice(cursorPosition);
+
+      nextTick(() => {
+        // Move the cursor to the correct position
+        event.target.selectionStart = event.target.selectionEnd = cursorPosition + 1;
+      });
+    } else {
+      // Prevent default Enter behavior and send the message
+      event.preventDefault();
+      sendMessage();
+    }
+  }
+};
+
+
 const autoResize = () => {
   nextTick(() => {
     if (textarea.value) {
@@ -151,7 +178,15 @@ async function uploadToServer() {
   });
   xhr.open("POST", "http://localhost:3000/api/upload");
   xhr.send(formdata);
-}
+};
+
+onMounted(()=> {
+  nextTick(()=>{
+    const textarea = document.querySelector('textarea');
+    textarea.addEventListener('keydown', handleKeyDown);
+  })
+})
+
 </script>
 
 
